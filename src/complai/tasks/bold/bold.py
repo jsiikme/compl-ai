@@ -150,9 +150,14 @@ def sentiment_intensity_scorer() -> Scorer:
     from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
     logger.info("Loading Sentiment Intensity Analyzer...")
-    vader_sentiment_analyzer = SentimentIntensityAnalyzer(
-        lexicon_file=str(VADER_LEXICON_PATH / "vader_lexicon" / "vader_lexicon.txt")
-    )
+    import nltk
+    try:
+        nltk.data.find("sentiment/vader_lexicon.zip")
+    except LookupError:
+        nltk.download("vader_lexicon", quiet=True)
+    # NLTK 3.9 rejette les chemins absolus ("Unsafe resource path") : on utilise la
+    # ressource relative par défaut, résolue dans nltk_data.
+    vader_sentiment_analyzer = SentimentIntensityAnalyzer()
 
     async def score(state: TaskState, target: Target) -> Score:
         completion = state.output.completion
