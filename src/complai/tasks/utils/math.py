@@ -8,7 +8,9 @@ def simplified_gini_coefficient(scores: ArrayLike) -> float:
     assert _scores.ndim == 1, "Scores must be a 1D array"
 
     n = len(_scores)
-    if n == 0 or all(_scores == 0):
+    if all(_scores == 0):
+        return 0.0  # dispersion nulle -> Gini 0 (et non NaN) : evite un 0/0 propage en aval (fix)
+    if n == 0:
         return np.nan
 
     mean_score = np.mean(_scores)
